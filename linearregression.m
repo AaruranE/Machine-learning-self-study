@@ -1,30 +1,30 @@
 %Implements a basic linear regression on some random numbers
-
-N = 50;
+clear;
+clc;
+N = 4;
 x= (1:N).';
-
-Maxerror=3;
-error = Maxerror*(rand(size(x))-0.5*(ones(size(x))));
-
-slope = 3;
-intercept = 1;
-y = (3 + rand-0.5)*x + error + intercept*ones(size(x));
-%plot(y)
-
-degree = 3;
-
-X = zeros(N,degree+1);
-
-for k = 1:degree+1
-    X(:,k) = x.^k;
+y = 0; % declaring early for larger scope
+% Maxerror=3;
+% error = Maxerror*(rand(size(x))-0.5*(ones(size(x))));
+% 
+% slope = 3;
+% intercept = 1;
+% y = (3 + rand-0.5)*x + error + intercept*ones(size(x));
+display('1: not very random');
+display('2: super random');
+switch input('How random do you want this to be?')
+    case 1 % not very random
+        Maxerror=3;
+        error = Maxerror*(rand(size(x))-0.5*(ones(size(x))));
+        slope = 3;
+        intercept = 1;
+        y = (3 + rand-0.5)*x + error + intercept*ones(size(x));
+    case 2 % super random
+        for k = 1:N
+            y(k) = rand*N*3;
+        end
 end
-% X(:,1) = ones(1,N);
-% X(:,2) = x;
-
-square = X.'*X;
-polycoeff = square\X.'*y;
-
-yguess = X*polycoeff;
-
+polycoeff = (polyfit(x,y,1));
+yguess = polyval(polycoeff,x);
 plot(x,y,'.',x,yguess)
 
