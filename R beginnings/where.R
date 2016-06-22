@@ -34,5 +34,5 @@ h <- hexbin(df)
 hexbinplot(latitude~longitude, data=df, colramp=rf, mincnt=1,maxcnt=500,
            main = "Hexagonal Data bining of Meteorite Landings")
 
-library(gplots)
-h2 <- hist2d(df,nbins=75)
+# library(gplots)
+# h2 <- hist2d(df,nbins=75)
