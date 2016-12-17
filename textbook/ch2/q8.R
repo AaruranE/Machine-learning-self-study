@@ -1,7 +1,7 @@
 library(ISLR)
 data(College)
 
-//summary()
+#summary()
 pairs(College[,1:10])
 boxplot(College$Outstate ~ College[,1])  
 

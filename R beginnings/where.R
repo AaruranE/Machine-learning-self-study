@@ -34,5 +34,22 @@ h <- hexbin(df)
 hexbinplot(latitude~longitude, data=df, colramp=rf, mincnt=1,maxcnt=500,
            main = "Hexagonal Data bining of Meteorite Landings")
 
-# library(gplots)
-# h2 <- hist2d(df,nbins=75)
+library(ggplot2)
+ggplot(met, aes(x=reclong, y=reclat, color=mass..g.)) + geom_point()
+library(dplyr)
+HeavyMet <- met %>% filter(mass..g. >= 1000)
+ggplot(HeavyMet, aes(x=reclong, y=reclat, color=mass..g.)) + geom_point()
+LightMet <- met %>% filter(mass..g. <= 1000)
+ggplot(LightMet, aes(x=reclong, y=reclat, color=mass..g.)) + geom_point()
+
+hist(met$mass..g., plot = TRUE)
+# based on the above histogram, exclude the excessively heavy meteorites (greater than 1e+07)
+
+LightMet <- met %>%filter(mass..g. <= 10^6)
+ggplot(LightMet, aes(x=reclong, y=reclat, color=mass..g.)) + geom_point()
+hist(LightMet$mass..g., plot = TRUE)
+
+MiddleMet <- met %>% filter(mass..g. >=7 ) %>% filter(mass..g. <= 13280)
+p <- ggplot(MiddleMet, aes(x=reclong, y=reclat, color=mass..g.)) + geom_point()
+p <- p + aes(shape = recclass)
+p

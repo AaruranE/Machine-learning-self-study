@@ -1,0 +1,6 @@
+C:\Users\Aaruran\Documents\GitHub\Machine learning Self-study\kmeans\kmeans\bin\Debug\kmeans.exe.config
+C:\Users\Aaruran\Documents\GitHub\Machine learning Self-study\kmeans\kmeans\bin\Debug\kmeans.exe
+C:\Users\Aaruran\Documents\GitHub\Machine learning Self-study\kmeans\kmeans\bin\Debug\kmeans.pdb
+C:\Users\Aaruran\Documents\GitHub\Machine learning Self-study\kmeans\kmeans\obj\Debug\kmeans.csprojResolveAssemblyReference.cache
+C:\Users\Aaruran\Documents\GitHub\Machine learning Self-study\kmeans\kmeans\obj\Debug\kmeans.exe
+C:\Users\Aaruran\Documents\GitHub\Machine learning Self-study\kmeans\kmeans\obj\Debug\kmeans.pdb
