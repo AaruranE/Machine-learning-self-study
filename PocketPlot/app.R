@@ -11,6 +11,7 @@ library(shiny)
 library(dplyr)
 library(ggplot2)
 library(DT)
+library(plotly)
 
 
 # Define UI for application that draws a histogram
@@ -61,7 +62,7 @@ server <- shinyServer(function(input, output) {
     req(input$x.axis)
     req(input$y.axis)
     p <- ggplot(csv.Frame(), aes_string(x=input$x.axis, y=input$y.axis)) + geom_point()
-    p
+    ggplotly(p)
   })
   
   
