@@ -12,11 +12,14 @@ library(dplyr)
 library(ggplot2)
 library(DT)
 library(plotly)
+library(shinythemes)
 
 
 # Define UI for application that draws a histogram
-ui <- shinyUI(fluidPage(title = "Pocket plotter",theme = "bootstrap.css",
-              sidebarLayout(
+ui <- shinyUI(fluidPage(title = "Pocket plotter",theme = shinytheme("flatly"),
+              #the above themes are taken from the following link
+              #http://bootswatch.com/ 
+                  sidebarLayout(
                   sidebarPanel(
                     fileInput("csvFile", 
                               "Upload csv file", 
@@ -26,7 +29,7 @@ ui <- shinyUI(fluidPage(title = "Pocket plotter",theme = "bootstrap.css",
                     uiOutput("chooseY")
                   ),
                   mainPanel(
-                    plotOutput("plot"),
+                    plotlyOutput("plot"),
                     dataTableOutput("table")
                   )
               )
@@ -57,15 +60,13 @@ server <- shinyServer(function(input, output) {
     DT::datatable(csv.Frame())
   })
   
-  output$plot <- renderPlot({
+  output$plot <- renderPlotly({
     req(csv.Frame)
     req(input$x.axis)
     req(input$y.axis)
     p <- ggplot(csv.Frame(), aes_string(x=input$x.axis, y=input$y.axis)) + geom_point()
-    ggplotly(p)
+    p
   })
-  
-  
   
 })
 
