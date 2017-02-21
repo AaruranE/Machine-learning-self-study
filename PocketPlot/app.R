@@ -13,12 +13,14 @@ library(ggplot2)
 library(DT)
 library(plotly)
 library(shinythemes)
+library(data.table)
 
 
 # Define UI for application that draws a histogram
 ui <- shinyUI(fluidPage(title = "Pocket plotter",theme = shinytheme("flatly"),
               #the above themes are taken from the following link
               #http://bootswatch.com/ 
+                headerPanel("Pocket Plot!"),
                   sidebarLayout(
                   sidebarPanel(
                     fileInput("csvFile", 
@@ -26,7 +28,8 @@ ui <- shinyUI(fluidPage(title = "Pocket plotter",theme = shinytheme("flatly"),
                               multiple = FALSE, 
                               accept = c("*.csv")),
                     uiOutput("chooseX"),
-                    uiOutput("chooseY")
+                    uiOutput("chooseY"),
+                    textOutput("explanation")
                   ),
                   mainPanel(
                     plotlyOutput("plot"),
@@ -43,7 +46,7 @@ server <- shinyServer(function(input, output) {
    
   csv.Frame <- reactive({
     req(input$csvFile$datapath)
-    read.csv(input$csvFile$datapath, header=TRUE,sep=",")  
+    data.table::fread(input$csvFile$datapath, header=TRUE,sep=",")  
   })
   
   
@@ -66,6 +69,11 @@ server <- shinyServer(function(input, output) {
     req(input$y.axis)
     p <- ggplot(csv.Frame(), aes_string(x=input$x.axis, y=input$y.axis)) + geom_point()
     p
+  })
+  
+  output$explanation <- renderText({
+    out <- "Hello! Welcome to Pocket Plot! This is a simple Shiny tool that lets you quickly plot \n csv data using Plotly. Upload a file and find out how easy it is."
+    
   })
   
 })
