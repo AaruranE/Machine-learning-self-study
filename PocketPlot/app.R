@@ -1,12 +1,3 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(dplyr)
 library(ggplot2)
@@ -23,25 +14,24 @@ ui <- shinyUI(fluidPage(title = "Pocket plotter",theme = shinytheme("flatly"),
                 headerPanel("Pocket Plot!"),
                   sidebarLayout(
                   sidebarPanel(
+                    textOutput("explanation"),
                     fileInput("csvFile", 
                               "Upload csv file", 
                               multiple = FALSE, 
                               accept = c("*.csv")),
                     uiOutput("chooseX"),
-                    uiOutput("chooseY"),
-                    textOutput("explanation")
-                  ),
+                    uiOutput("chooseY")),
                   mainPanel(
-                    plotlyOutput("plot"),
-                    dataTableOutput("table")
+                    tabsetPanel(
+                      tabPanel("Plot",plotlyOutput("plot")),
+                      tabPanel("Table", dataTableOutput("summary"),dataTableOutput("table")),
+                      tabPanel("Histograms", plotOutput("hists"))
+                    )
                   )
               )
-        # uiOutput("x.axis", "Select x-axis"),
-        # uiOutput("y.axis", "Select y-axis")
         )
 )
 
-# Define server logic required to draw a histogram
 server <- shinyServer(function(input, output) {
    
   csv.Frame <- reactive({
@@ -49,13 +39,27 @@ server <- shinyServer(function(input, output) {
     data.table::fread(input$csvFile$datapath, header=TRUE,sep=",")  
   })
   
-  
   output$chooseX <- renderUI({
     selectInput("x.axis", label = "Choose x-axis", choices=names(csv.Frame()))
   })
   
   output$chooseY <- renderUI({
     selectInput("y.axis", label = "Choose y-axis", choices = names(csv.Frame()))
+  })
+  
+  output$summary <- renderDataTable({
+    req(csv.Frame)
+    df <- csv.Frame()
+
+    Min <- apply(df, 2, min)
+    Max <- apply(df, 2, max)
+    Mean <- apply(df, 2, mean)
+    Median <- apply(df, 2, median)
+    StDev <- apply(df, 2, sd)
+    
+    df.summary <- rbind(Min, Max, Mean, Median, StDev)
+    rownames(df.summary) <- c("Min", "Max", "Mean", "Median", "Standard Deviation")
+    t(df.summary)
   })
   
   output$table <- renderDataTable({
@@ -72,8 +76,14 @@ server <- shinyServer(function(input, output) {
   })
   
   output$explanation <- renderText({
-    out <- "Hello! Welcome to Pocket Plot! This is a simple Shiny tool that lets you quickly plot \n csv data using Plotly. Upload a file and find out how easy it is."
-    
+    out <- "Hello! Welcome to Pocket Plot! This is a simple Shiny tool that lets you quickly plot \n fixed-width data using Plotly. Upload a file and find out how easy it is."
+  })
+  
+  output$hists <- renderPlot({
+    req(csv.Frame)
+    p <- ggplot(csv.Frame() %>% as.data.frame %>% melt(), aes(x=value)) + geom_histogram() 
+    p <- p + facet_wrap(~variable, scales = "free")
+    p
   })
   
 })
