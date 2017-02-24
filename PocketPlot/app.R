@@ -1,10 +1,9 @@
 library(shiny)
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
 library(DT)
 library(plotly)
 library(shinythemes)
-library(data.table)
+library(dtplyr)
 
 
 # Define UI for application that draws a histogram
@@ -18,14 +17,18 @@ ui <- shinyUI(fluidPage(title = "Pocket plotter",theme = shinytheme("flatly"),
                     fileInput("csvFile", 
                               "Upload csv file", 
                               multiple = FALSE, 
-                              accept = c("*.csv")),
-                    uiOutput("chooseX"),
-                    uiOutput("chooseY")),
+                              accept = c("*.csv"))
+                    ),
                   mainPanel(
                     tabsetPanel(
-                      tabPanel("Plot",plotlyOutput("plot")),
-                      tabPanel("Table", dataTableOutput("summary"),dataTableOutput("table")),
-                      tabPanel("Histograms", plotOutput("hists"))
+                      tabPanel("Plot",plotlyOutput("plot"),
+                               uiOutput("chooseX"),
+                               uiOutput("chooseY")),
+                      tabPanel("Table", 
+                               h2("Summary"), dataTableOutput("summary"),
+                               h2("Full Table"), dataTableOutput("table")),
+                      tabPanel("Histograms", plotOutput("hists")),
+                      tabPanel("Correlation Matrix", dataTableOutput("cg"))
                     )
                   )
               )
@@ -59,7 +62,7 @@ server <- shinyServer(function(input, output) {
     
     df.summary <- rbind(Min, Max, Mean, Median, StDev)
     rownames(df.summary) <- c("Min", "Max", "Mean", "Median", "Standard Deviation")
-    t(df.summary)
+    DT::datatable(t(df.summary), options = list(searching = FALSE))
   })
   
   output$table <- renderDataTable({
@@ -72,6 +75,8 @@ server <- shinyServer(function(input, output) {
     req(input$x.axis)
     req(input$y.axis)
     p <- ggplot(csv.Frame(), aes_string(x=input$x.axis, y=input$y.axis)) + geom_point()
+    p <- p + ggtitle(paste(input$y.axis, "vs.", input$x.axis))
+    
     p
   })
   
@@ -84,6 +89,12 @@ server <- shinyServer(function(input, output) {
     p <- ggplot(csv.Frame() %>% as.data.frame %>% melt(), aes(x=value)) + geom_histogram() 
     p <- p + facet_wrap(~variable, scales = "free")
     p
+  })
+  
+  output$cg <- renderDataTable({
+    req(csv.Frame)
+    cdf <- cor(csv.Frame()) %>% as.data.frame()
+    DT::datatable(round(cdf, digits=3),options=list(searching=FALSE, paging=FALSE))
   })
   
 })
