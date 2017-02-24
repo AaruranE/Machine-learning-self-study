@@ -76,7 +76,6 @@ server <- shinyServer(function(input, output) {
     req(input$y.axis)
     p <- ggplot(csv.Frame(), aes_string(x=input$x.axis, y=input$y.axis)) + geom_point()
     p <- p + ggtitle(paste(input$y.axis, "vs.", input$x.axis))
-    
     p
   })
   
